@@ -37,12 +37,25 @@ router.post('/', async (req, res) => {
             password: hashedPW,
         });
         await newAccount.save();
-        res.status(201).json(newAccount);
+        res.status(201).json({email: newAccount.email, playlists: newAccount.playlists});
     } catch(e) {
         if(e.code == 11000)
             res.status(400).send("email is already in use");
         else
             res.status(500).send("uh oh - internal server error");
+    }
+});
+
+router.get('/', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const account = await Account.findOne({ email:email });
+        if(account !== null && await bcrypt.compare(password, account.password))
+            res.status(200).json({email: account.email, playlists: account.playlists});
+        else
+            throw new Error("Your email or password is incorrect");
+    } catch(e) {
+        res.status(404).send(e.message);
     }
 });
 
