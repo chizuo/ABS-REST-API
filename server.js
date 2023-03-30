@@ -1,12 +1,12 @@
 // Package dependencies of server
 const express = require('express');
-const v1 = require('./routes/v1/api-gateway');
+const routes = require('./routes');
 
 // Instance of server
 const server = express();
 
 server.use(express.json());
-server.use('/v1', v1);
+server.use('/', routes);
 
 // Exporting for unit tests rather than running as a process and listening through the port.
 module.exports = server;
