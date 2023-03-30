@@ -59,4 +59,26 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.put('/', async (req, res) => {
+    try {
+        const { email, password, new_email, new_password } = req.body;
+        const query = { email: email }
+        const account = await Account.findOne(query);
+        if(account !== null && await bcrypt.compare(password, account.password)) {
+            const update = { 
+                $set: { 
+                    email: new_email.length > 0 ? new_email : email, 
+                    password: new_password.length > 0 ? await bcrypt.hash(new_password, 10) : password 
+                } 
+            }
+            await Account.updateOne(query, update);
+            res.status(200).send("update successful");
+        } else {
+            throw new Error();
+        }
+    } catch(e) {
+        res.status(404).send("update failed");
+    }
+});
+
 module.exports = router;
