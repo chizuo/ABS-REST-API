@@ -39,7 +39,10 @@ router.post('/', async (req, res) => {
         await newAccount.save();
         res.status(201).json(newAccount);
     } catch(e) {
-        res.status(500).send(e);
+        if(e.code == 11000)
+            res.status(400).send("email is already in use");
+        else
+            res.status(500).send("uh oh - internal server error");
     }
 });
 
