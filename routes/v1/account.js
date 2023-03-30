@@ -81,4 +81,19 @@ router.put('/', async (req, res) => {
     }
 });
 
+router.delete('/', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const account = await Account.findOne({ email: email });
+        if(account !== null && await bcrypt.compare(password, account.password)) {
+            await Account.deleteOne({ email: email });
+            res.status(200).send("your account has been deleted");
+        } else {
+            throw new Error();
+        }
+    } catch {
+        res.status(404).send("delete failed");
+    }
+});
+
 module.exports = router;
