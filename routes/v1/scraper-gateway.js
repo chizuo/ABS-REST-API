@@ -16,8 +16,12 @@ router.post('/youtube', async (req, res) => {
 router.put('/youtube', async (req, res) => {
     try {
         if(req.body.contents === undefined) throw new Error("missing contents list");
-    } catch {
-
+        const response = await axios.put(SCRAPER_API, { url:req.body.url, plid:req.body.plid, contents:req.body.contents });
+        if(response.status === 200) res.status(200).json(response.data);
+        else if(response.status === 204) res.status(204).send();
+        else throw new Error(response.message);
+    } catch(e) {
+        res.status(501).send(e.message);
     }
 });
 
