@@ -2,7 +2,7 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const { MONGODB_ACCOUNT, MONGODB_HOST, MONGODB_PW, MONGODB_PORT, MONGODB_DB, MONGODB_AUTH } = require('../../ENV/secrets');
+const { MONGODB_ACCOUNT, MONGODB_HOST, MONGODB_PW, MONGODB_PORT, MONGODB_DB, MONGODB_AUTH } = require('../../ENV');
 
 const conn = `mongodb://${MONGODB_ACCOUNT}:${MONGODB_PW}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DB}?authSource=${MONGODB_AUTH}`;
 
