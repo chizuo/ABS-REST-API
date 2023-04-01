@@ -12,8 +12,8 @@ mongoose.connect(conn, {
 });
 
 const accountSchema = new mongoose.Schema({
-    email: { type: String, index: { unique: true } },
-    password: String,
+    email: { type: String, required: true, index: { unique: true } },
+    password: { type: String, required: true},
     playlists: { type:[{
         playlist_title: String,
         plid: String,
@@ -28,7 +28,7 @@ const accountSchema = new mongoose.Schema({
 
 const Account = mongoose.model('Account', accountSchema);
 
-router.post('/', async (req, res) => {
+router.post('/register', async (req, res) => {
     try {
         const { email, password } = req.body;
         const hashedPW = await bcrypt.hash(password, 10);
@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const { email, password } = req.body;
         const account = await Account.findOne({ email:email });
