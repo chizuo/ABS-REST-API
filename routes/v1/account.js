@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
         const { email, password } = req.body;
         const account = await Account.findOne({ email: email });
         if(account !== null && await bcrypt.compare(password, account.password))
-            res.status(200).json({email: account.email, playlists: account.playlists});
+            res.status(200).json({email: account.email, actions: account.actions, playlists: account.playlists});
         else
             throw new Error("Your email or password is incorrect");
     } catch(e) {
