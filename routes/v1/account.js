@@ -14,6 +14,7 @@ mongoose.connect(conn, {
 const accountSchema = new mongoose.Schema({
     email: { type: String, required: true, index: { unique: true } },
     password: { type: String, required: true},
+    actions: { type: Number, default: 0 },
     playlists: { type:[{
         playlist_title: String,
         plid: String,
@@ -37,7 +38,7 @@ router.post('/register', async (req, res) => {
             password: hashedPW,
         });
         await newAccount.save();
-        res.status(201).json({email: newAccount.email, playlists: newAccount.playlists});
+        res.status(201).json({email: newAccount.email, actions: newAccount.actions, playlists: newAccount.playlists});
     } catch(e) {
         if(e.code == 11000)
             res.status(400).send("email is already in use");
@@ -49,7 +50,7 @@ router.post('/register', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const account = await Account.findOne({ email:email });
+        const account = await Account.findOne({ email: email });
         if(account !== null && await bcrypt.compare(password, account.password))
             res.status(200).json({email: account.email, playlists: account.playlists});
         else
@@ -78,6 +79,28 @@ router.put('/', async (req, res) => {
         }
     } catch(e) {
         res.status(404).send("update failed");
+    }
+});
+
+router.put('/sync', async (req, res) => {
+    try {
+        const { email, actions, playlists } = req.body;
+        const query = { email: email }
+        const account = await Account.findOne(query);
+        if(account !== null) {
+            const update = {
+                $set: {
+                    actions: actions,
+                    playlists: playlists
+                }
+            }
+            await Account.updateOne(query, update);
+            res.status(200).send("account sync successful");
+        } else {
+            throw new Error();
+        }
+    } catch(e) {
+        res.status(404).send("account sync failed");
     }
 });
 
