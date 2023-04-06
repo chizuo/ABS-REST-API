@@ -4,6 +4,12 @@
 This is the REST-API for the front end application: "[A Better Subscription Service](https://github.com/chizuo/ABS-Browser-App)"
 
 ### Route Details
+`GET:<baseURL>/v1/account`
+- expects a JSON object
+
+`POST:<baseURL>/v1/account`
+- expects a JSON object
+
 `POST:<baseURL>/v1/api/youtube`
 - expects a JSON object 
     ```
