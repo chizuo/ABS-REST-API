@@ -16,13 +16,16 @@ const accountSchema = new mongoose.Schema({
     password: { type: String, required: true},
     actions: { type: Number, default: 0 },
     playlists: { type:[{
-        playlist_title: String,
-        plid: String,
-        clicked: { type: Number, default: 0 },
+        playlist_title: { type: String, required: true },
+        playlist_url: { type: String, required: true },
+        plid: { type: String, required: true },
+        clicked: { type: Number, default: 0, required: true },
+        channel: { type: String, required: true },
+        channel_url: { type: String, required: true },
         contents: { type: [{
-            title: String,
-            url: String,
-            viewed: { type: Boolean, default: false }
+            title: { type: String, required: true },
+            url: { type: String, required: true },
+            viewed: { type: Boolean, default: false, required: true }
         },], default: [] }
     },], default: [] }
 });
