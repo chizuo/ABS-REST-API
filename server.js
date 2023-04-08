@@ -7,7 +7,7 @@ const routes = require('./routes');
 const server = express();
 
 server.use(express.json());
-server.use(cors({methods:['GET','POST','PUT','DELETE'], allowedHeaders: ['Content-Type', 'Authorization']}));
+server.use(cors({origin: '*', methods:['GET','POST','PUT','DELETE'], allowedHeaders: ['Content-Type', 'Authorization']}));
 server.use('/', routes);
 
 // Exporting for unit tests rather than running as a process and listening through the port.
