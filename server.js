@@ -7,7 +7,7 @@ const routes = require('./routes');
 const server = express();
 
 server.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+server.use(express.urlencoded({ limit: '50mb', extended: true }));
 server.use(cors({ origin: '*', methods: ['GET', 'POST', 'PUT', 'DELETE'], allowedHeaders: ['Content-Type', 'Authorization'] }));
 server.use('/', routes);
 
