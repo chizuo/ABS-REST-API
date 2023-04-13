@@ -6,12 +6,9 @@ const routes = require('./routes');
 // Instance of server
 const server = express();
 
-server.use(express.json());
+server.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 server.use(cors({ origin: '*', methods: ['GET', 'POST', 'PUT', 'DELETE'], allowedHeaders: ['Content-Type', 'Authorization'] }));
-server.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    next();
-});
 server.use('/', routes);
 
 // Exporting for unit tests rather than running as a process and listening through the port.
