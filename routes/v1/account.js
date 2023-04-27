@@ -13,21 +13,25 @@ mongoose.connect(conn, {
 
 const accountSchema = new mongoose.Schema({
     email: { type: String, required: true, index: { unique: true } },
-    password: { type: String, required: true},
+    password: { type: String, required: true },
     actions: { type: Number, default: 0 },
-    playlists: { type:[{
-        playlist_title: { type: String, required: true },
-        playlist_url: { type: String, required: true },
-        plid: { type: String, required: true },
-        clicked: { type: Number, default: 0, required: true },
-        channel: { type: String, required: true },
-        channel_url: { type: String, required: true },
-        contents: { type: [{
-            title: { type: String, required: true },
-            url: { type: String, required: true },
-            viewed: { type: Boolean, default: false, required: true }
-        },], default: [] }
-    },], default: [] }
+    playlists: {
+        type: [{
+            playlist_title: { type: String, required: true },
+            playlist_url: { type: String, required: true },
+            plid: { type: String, required: true },
+            clicked: { type: Number, default: 0, required: true },
+            channel: { type: String, required: true },
+            channel_url: { type: String, required: true },
+            contents: {
+                type: [{
+                    title: { type: String, required: true },
+                    url: { type: String, required: true },
+                    viewed: { type: Boolean, default: false, required: true }
+                },], default: []
+            }
+        },], default: []
+    }
 });
 
 const Account = mongoose.model('Account', accountSchema);
@@ -41,9 +45,9 @@ router.post('/register', async (req, res) => {
             password: hashedPW,
         });
         await newAccount.save();
-        res.status(201).json({email: newAccount.email, actions: newAccount.actions, playlists: newAccount.playlists});
-    } catch(e) {
-        if(e.code == 11000)
+        res.status(201).json({ email: newAccount.email, actions: newAccount.actions, playlists: newAccount.playlists });
+    } catch (e) {
+        if (e.code == 11000)
             res.status(400).send("email is already in use");
         else
             res.status(500).send("uh oh - internal server error");
@@ -54,11 +58,11 @@ router.post('/', async (req, res) => {
     try {
         const { email, password } = req.body;
         const account = await Account.findOne({ email: email });
-        if(account !== null && await bcrypt.compare(password, account.password))
-            res.status(200).json({email: account.email, actions: account.actions, playlists: account.playlists});
+        if (account !== null && await bcrypt.compare(password, account.password))
+            res.status(200).json({ email: account.email, actions: account.actions, playlists: account.playlists });
         else
             throw new Error("Your email or password is incorrect");
-    } catch(e) {
+    } catch (e) {
         res.status(404).send(e.message);
     }
 });
@@ -68,19 +72,20 @@ router.put('/', async (req, res) => {
         const { email, password, new_email, new_password } = req.body;
         const query = { email: email }
         const account = await Account.findOne(query);
-        if(account !== null && await bcrypt.compare(password, account.password)) {
-            const update = { 
-                $set: { 
-                    email: new_email.length > 0 ? new_email : email, 
-                    password: new_password.length > 0 ? await bcrypt.hash(new_password, 10) : password 
-                } 
+        if (account !== null && await bcrypt.compare(password, account.password)) {
+            let pw = new_password !== undefined ? await bcrypt.hash(new_password, 10) : account.password;
+            const update = {
+                $set: {
+                    email: new_email.length > 0 ? new_email : email,
+                    password: pw
+                }
             }
             await Account.updateOne(query, update);
             res.status(200).send("update successful");
         } else {
             throw new Error();
         }
-    } catch(e) {
+    } catch (e) {
         res.status(404).send("update failed");
     }
 });
@@ -90,7 +95,7 @@ router.put('/sync', async (req, res) => {
         const { email, actions, playlists } = req.body;
         const query = { email: email }
         const account = await Account.findOne(query);
-        if(account !== null) {
+        if (account !== null) {
             const update = {
                 $set: {
                     actions: actions,
@@ -102,7 +107,7 @@ router.put('/sync', async (req, res) => {
         } else {
             throw new Error();
         }
-    } catch(e) {
+    } catch (e) {
         res.status(404).send("account sync failed");
     }
 });
@@ -111,7 +116,7 @@ router.delete('/', async (req, res) => {
     try {
         const { email, password } = req.body;
         const account = await Account.findOne({ email: email });
-        if(account !== null && await bcrypt.compare(password, account.password)) {
+        if (account !== null && await bcrypt.compare(password, account.password)) {
             await Account.deleteOne({ email: email });
             res.status(200).send("your account has been deleted");
         } else {
