@@ -76,7 +76,7 @@ router.put('/', async (req, res) => {
             let pw = new_password !== undefined ? await bcrypt.hash(new_password, 10) : account.password;
             const update = {
                 $set: {
-                    email: new_email.length > 0 ? new_email : email,
+                    email: new_email !== undefined ? new_email : email,
                     password: pw
                 }
             }
@@ -86,7 +86,7 @@ router.put('/', async (req, res) => {
             throw new Error();
         }
     } catch (e) {
-        res.status(404).send("update failed");
+        res.status(404).send("your email or password is incorrect");
     }
 });
 
